@@ -1,17 +1,25 @@
 import React from 'react';
-import { Grid, Cell, Textfield, Button, Checkbox } from 'react-mdl';
+import Relay from 'react-relay';
+import { Grid, Cell } from 'react-mdl';
 import Page from '../Page/PageComponent';
+import TodoList from './TodoList';
 
-export default class TodoComponent extends React.Component {
+const pageSize = 30;
+
+class TodoComponent extends React.Component {
+    static propTypes = {
+        todosCollection: React.PropTypes.object.isRequired
+    };
+
     render() {
+        console.log("rendering toods");
+        console.log(this.props.todosCollection);
         return (
             <Page heading='TodoList'>
                 <div style={{ width: '70%', margin: 'auto' }}>
                     <Grid>
                         <Cell col={12}>
-                            <ul>
-                                <li></li>
-                            </ul>
+                            <TodoList todos={this.props.todosCollection.todos}/>
                         </Cell>
                     </Grid>
                 </div>
@@ -19,3 +27,29 @@ export default class TodoComponent extends React.Component {
         );
     }
 }
+
+
+export default Relay.createContainer(TodoComponent, {
+    initialVariables: {
+        first: pageSize,
+        before: null,
+        after: null,
+        last: null,
+    },
+    fragments: {
+        todosCollection: () => Relay.QL`
+          fragment on TodoCollection {
+            id,
+            todos(first: $first, before: $before, after: $after, last: $last) {
+              edges {
+                node {
+                  id
+                  name
+                  status
+                }
+              }
+            }
+          }`
+    }
+});
+

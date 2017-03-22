@@ -1,17 +1,27 @@
-import React, { Component } from "react";
-import Todo from 'Todo';
+import React, {Component} from "react";
+import Todo from './Todo';
 
-class TodoList extends Component
-{
+class TodoList extends Component {
+    static propTypes = {
+        todos: React.PropTypes.object.isRequired
+    };
+
+    renderTodos() {
+        const {todos} = this.props;
+
+        return todos.edges.map(({node}) => (
+            <Todo
+                key={node.id}
+                todo={node}
+            />
+        ));
+    }
+
     render() {
-
-        const listTodos = this.props.todos.map((todo) =>
-            <Todo key={todo.id} id={todo.id} name={todo.name} status={todo.status} />
-        );
 
         return (
             <ul>
-                {listTodos}
+                {this.renderTodos()}
             </ul>
         );
     }
